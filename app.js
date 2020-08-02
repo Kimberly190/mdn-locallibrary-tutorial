@@ -7,7 +7,17 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+// TEMP until I see how the tutorial is handling this
+var secrets = require('./secrets');
+
 var app = express();
+
+// Set up mongoose connection
+var mongoose = require('mongoose');
+var mongoDB = secrets.db_conn;
+mongoose.connect(mongoDB, { useNewUrlParser: true });
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
