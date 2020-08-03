@@ -13,26 +13,19 @@ var AuthorSchema = new Schema(
 
 // Virtual for author's full name
 AuthorSchema.virtual('name').get(function() {
-    // To avoid errors in cases where an author does not have either a family name or first name
-    // We want to make sure we handle the exception by returning an empty string for that case
+    // Return only family name if first name not defined, or empty string if none.
     var fullName = '';
-    if (this.first_name && this.first_name) {
-        fullName = this.family_name + ', ' + this.first_name;
+    if (this.family_name) {
+        fullName += this.family_name;
+        if (this.first_name) {
+            fullName += ', ' + this.first_name;
+        }
     }
-    // REMOVED: from tutorial, redundant
-    // if (!this.first_name || !this.family_name) {
-    //     fullname = '';
-    // }
     return fullName;
 });
 
-// Virtual for author's lifespan
+// Virtual for author's lifespan, formatted
 AuthorSchema.virtual('lifespan').get(function() {
-    return (this.date_of_death.getYear() - this.date_of_birth.getYear()).toString();
-});
-
-// Virtual for author's lifespan detail, formatted
-AuthorSchema.virtual('lifespan_detail_formatted').get(function() {
     console.log('Author name: ' + this.family_name + ' birth: ' + this.date_of_birth + ' death: ' + this.date_of_death);
     return (this.date_of_birth ? moment(this.date_of_birth).format('MMMM Do, YYYY') : '?')
     + ' - '
