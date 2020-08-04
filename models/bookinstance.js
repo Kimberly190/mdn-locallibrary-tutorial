@@ -23,6 +23,11 @@ BookInstanceSchema.virtual('due_back_formatted').get(function() {
     return moment(this.due_back).format('MMMM Do, YYYY');
 })
 
+// Virtual for html date-input due date
+BookInstanceSchema.virtual('due_back_html').get(function() {
+    return moment(this.due_back).format('YYYY-MM-DD');
+})
+
 BookInstanceSchema.static('statuses', function() {
     return _statuses;
 })

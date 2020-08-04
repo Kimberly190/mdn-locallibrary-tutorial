@@ -9,12 +9,13 @@ block content
   p #[strong Imprint:] #{bookinstance.imprint}
 
   p #[strong Status:]&nbsp;
-    if bookinstance.status=='Available'
-      span.text-success #{bookinstance.status}
-    else if bookinstance.status=='Maintenance'
-      span.text-danger #{bookinstance.status}
-    else
-      span.text-warning #{bookinstance.status}
+    include bookinstance_status_snippet.pug
   
   if bookinstance.status!='Available'
     p #[strong Due back:] #{bookinstance.due_back_formatted}
+  
+  hr
+  p
+    a(href=bookinstance.url+'/delete') Delete Book Instance
+  p
+    a(href=bookinstance.url+'/update') Update Book Instance

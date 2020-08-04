@@ -1,0 +1,6 @@
+if bookinstance.status=='Available'
+  span.text-success #{bookinstance.status}
+else if bookinstance.status=='Maintenance'
+  span.text-danger #{bookinstance.status}
+else
+  span.text-warning #{bookinstance.status}
