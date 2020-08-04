@@ -11,16 +11,23 @@ var catalogRouter = require('./routes/catalog');  // Custom routes for catalog a
 var compression = require('compression');
 var helmet = require('helmet');
 
-// TEMP until I see how the tutorial is handling this
-var secrets = require('./secrets');
-
 var app = express();
 
 app.use(helmet()); // HTTP headers vs. certain vulnerabilities
 
+app.use(logger('dev')); // TODO: resolve w/ use of debug logger
+
+var debug = require('debug')('app');
+// Get dev db URI from local secrets
+try {
+  var secrets = require('./secrets');
+} catch(error) {
+  debug('error getting DB URI: ' + error);
+}
+
 // Set up mongoose connection
 var mongoose = require('mongoose');
-var mongoDB = secrets.db_conn;
+var mongoDB = process.env.MONGODB_URI || secrets.db_conn;
 mongoose.connect(mongoDB, { useNewUrlParser: true });
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -29,7 +36,6 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev')); // TODO: resolve w/ use of debug logger
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
