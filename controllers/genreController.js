@@ -8,7 +8,10 @@ exports.genre_list = function(req, res, next) {
     Genre.find()
         .sort([['name', 'ascending']])
         .exec(function(err, list_genres) {
-            if (err) { return next(err); }
+            if (err) {
+                debug('error on read: ' + err);
+                return next(err);
+            }
             // Successful, so render
             res.render('genre_list', { title: 'Genre List', genre_list: list_genres });
         });
@@ -26,7 +29,10 @@ exports.genre_detail = function(req, res, next) {
                 .exec(callback);
         },
     }, function(err, results) {
-        if (err) { return next(err); }
+        if (err) {
+            debug('error on read: ' + err);
+            return next(err);
+        }
         if (results.genre == null) { //No results.
             var err = new Error('Genre not found');
             err.status = 404;
@@ -71,14 +77,20 @@ exports.genre_create_post = [
             // Check if Genre with same name already exists.
             Genre.findOne({ 'name': req.body.name })
                 .exec(function(err, found_genre) {
-                    if (err) { return next(err); }
+                    if (err) {
+                        debug('error on read: ' + err);
+                        return next(err);
+                    }
 
                     if (found_genre) {
                         // Genre exists, redirect to its detail page.
                         res.redirect(found_genre.url);
                     } else {
                         genre.save(function(err) {
-                            if (err) { return next(err); }
+                            if (err) {
+                                debug('error on create: ' + err);
+                                return next(err);
+                            }
                             // Genre saved.  Redirect to genre detail page.
                             res.redirect(genre.url);
                         });
@@ -98,7 +110,10 @@ exports.genre_delete_get = function(req, res, next) {
             Book.find({ 'genre': req.params.id }, 'title').exec(callback);
         }
     }, function(err, results) {
-        if (err) { return next(err); }
+        if (err) {
+            debug('error on read: ' + err);
+            return next(err);
+        }
         if (results.genre == null) { // No results, nothing to delete
             res.redirect('/catalog/genres');
         }
@@ -118,7 +133,10 @@ exports.genre_delete_post = function(req, res) {
             Book.find({ 'genre': req.body.genreid }).exec(callback);
         }
     }, function(err, results) {
-        if (err) { return next(err); }
+        if (err) {
+            debug('error on read: ' + err);
+            return next(err);
+        }
         // Success
         if (results.genres_books.length > 0) {
             // Genre has books.  Render in same way as for GET route.
@@ -127,7 +145,10 @@ exports.genre_delete_post = function(req, res) {
         } else {
             // Genre has no books.  Delete object and redirect to the list of genres.
             Genre.findByIdAndRemove(req.body.genreid, function deleteGenre(err) {
-                if (err) { return next(err); }
+                if (err) {
+                    debug('error on delete: ' + err);
+                    return next(err);
+                }
                 // Success - go to genre list
                 res.redirect('/catalog/genres');
             })
@@ -138,7 +159,10 @@ exports.genre_delete_post = function(req, res) {
 // Display Genre update form on GET.
 exports.genre_update_get = function(req, res, next) {
     Genre.findById(req.params.id).exec(function(err, genre) {
-        if (err) { return next(err); }
+        if (err) {
+            debug('error on read: ' + err);
+            return next(err);
+        }
         if (genre == null) { // No results.
             var err = new Error('Genre not found');
             err.status = 404;
@@ -176,7 +200,10 @@ exports.genre_update_post = [
         } else {
             // Data from form is valid.  Update the record.
             Genre.findByIdAndUpdate(req.params.id, genre, {}, function(err, thegenre) {
-                if (err) { return next(err); }
+                if (err) {
+                    debug('error on update: ' + err);
+                    return next(err);
+                }
                 // Successful - redirect to genre detail page
                 res.redirect(thegenre.url);
             });

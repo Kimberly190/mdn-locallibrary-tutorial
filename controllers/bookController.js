@@ -6,6 +6,8 @@ var BookInstance = require('../models/bookinstance');
 var async = require('async');
 const validator = require('express-validator');
 
+const debug = require('debug')('book');
+
 exports.index = function(req, res) {
     async.parallel({
         // Pass an empty object as match condition to find all documents of each collection
@@ -34,7 +36,10 @@ exports.book_list = function(req, res, next) {
     Book.find({}, 'title author')
         .populate('author')
         .exec(function(err, list_books) {
-            if (err) { return next(err); }
+            if (err) {
+                debug('error on read: ' + err);
+                return next(err);
+            }
             // Successful, so render
             res.render('book_list', { title: 'Book List', book_list: list_books });
         });
@@ -54,7 +59,10 @@ exports.book_detail = function(req, res, next) {
                 .exec(callback);
         },
     }, function(err, results) {
-        if (err) { return next(err); }
+        if (err) {
+            debug('error on read: ' + err);
+            return next(err);
+        }
         if (results.book == null) { // No results.
             var err = new Error('Book not found');
             err.status = 404;
@@ -76,7 +84,10 @@ exports.book_create_get = function(req, res, next) {
             Genre.find(callback);
         }
     }, function(err, results) {
-        if (err) { return next(err); }
+        if (err) {
+            debug('error on read: ' + err);
+            return next(err);
+        }
         res.render('book_form', { title: 'Create Book', authors: results.authors, genres: results.genres });
     });
 };
@@ -135,7 +146,10 @@ exports.book_create_post = [
                     Genre.find(callback);
                 }
             }, function(err, results) {
-                if (err) { return next(err); }
+                if (err) {
+                    debug('error on read: ' + err);
+                    return next(err);
+                }
 
                 // Mark our selected genres as checked.
                 for (let i = 0;  i < results.genres.length; i++) {
@@ -149,7 +163,10 @@ exports.book_create_post = [
         } else {
             // Data from form are valid.  Save book.
             book.save(function(err) {
-                if (err) { return next(err); }
+                if (err) {
+                    debug('error on create: ' + err);
+                    return next(err);
+                }
                 // Successful - redirect to new book.
                 res.redirect(book.url);
             });
@@ -170,7 +187,10 @@ exports.book_delete_get = function(req, res, next) {
             BookInstance.find({ 'book': req.params.id }).exec(callback);
         }
     }, function(err, results) {
-        if (err) { return next(err); }
+        if (err) {
+            debug('error on read: ' + err);
+            return next(err);
+        }
         if (results.book == null) { // No results, nothing to delete
             res.redirect('/catalog/books');
         }
@@ -190,7 +210,10 @@ exports.book_delete_post = function(req, res, next) {
             BookInstance.find({ 'book': req.body.bookid }).exec(callback);
         },
     }, function(err, results) {
-        if (err) { return next(err); }
+        if (err) {
+            debug('error on read: ' + err);
+            return next(err);
+        }
         // Success
         if (results.book_instances.length > 0) {
             // Book has copies.  Render in same way as for GET route.
@@ -199,7 +222,10 @@ exports.book_delete_post = function(req, res, next) {
         }
         // Book has no copies.  Delete object and redirect to the list of books.
         Book.findByIdAndRemove(req.body.bookid, function deleteBook(err) {
-            if (err) { return next(err); }
+            if (err) {
+                debug('error on delete: ' + err);
+                return next(err);
+            }
             // Success - go to book list
             res.redirect('/catalog/books');
         });
@@ -221,7 +247,10 @@ exports.book_update_get = function(req, res, next) {
             Genre.find(callback);
         }
     }, function(err, results) {
-        if (err) { return next(err); }
+        if (err) {
+            debug('error on read: ' + err);
+            return next(err);
+        }
         if (results.book == null) { // No results
             var err = new Error('Book not found');
             err.status = 404;
@@ -298,7 +327,10 @@ exports.book_update_post = [
                     Genre.find(callback);
                 }
             }, function(err, results) {
-                if (err) { return next(err); }
+                if (err) {
+                    debug('error on read: ' + err);
+                    return next(err);
+                }
 
                 // Mark our selected genres as checked
                 for (let i = 0; i < results.genres.length; i++) {
@@ -312,7 +344,10 @@ exports.book_update_post = [
         } else {
             // Data from form is valid.  Update the record.
             Book.findByIdAndUpdate(req.params.id, book, {}, function(err, thebook) {
-                if (err) { return next(err); }
+                if (err) {
+                    debug('error on update: ' + err);
+                    return next(err);
+                }
                 // Successful - redirect to book detail page
                 res.redirect(thebook.url);
             });
