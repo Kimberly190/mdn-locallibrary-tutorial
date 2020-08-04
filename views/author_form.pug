@@ -12,9 +12,9 @@ block content
       input#family_name.form-control(type='text' placeholder='Family name (surname)' name='family_name' required value=(undefined===author ? '' : author.family_name) )
     div.form-group
       label(for='date_of_birth') Date of birth:
-      input#date_of_birth.form-control(type='date' name='date_of_birth' value=(undefined===author ? '' : date_of_birth_value) )
+      input#date_of_birth.form-control(type='date' name='date_of_birth' value=(undefined===author ? '' : author.date_of_birth_html) )
       label(for='date_of_death') Date of death:
-      input#date_of_death.form-control(type='date' name='date_of_death' value=(undefined===author ? '' : date_of_death_value) )
+      input#date_of_death.form-control(type='date' name='date_of_death' value=(undefined===author ? '' : author.date_of_death_html) )
       <!-- TODO?: placeholder='mm/dd/yyyy' for older browsers? -->
     button.btn.btn-primary(type='submit') Submit
   

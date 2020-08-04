@@ -26,10 +26,19 @@ AuthorSchema.virtual('name').get(function() {
 
 // Virtual for author's lifespan, formatted
 AuthorSchema.virtual('lifespan').get(function() {
-    console.log('Author name: ' + this.family_name + ' birth: ' + this.date_of_birth + ' death: ' + this.date_of_death);
     return (this.date_of_birth ? moment(this.date_of_birth).format('MMMM Do, YYYY') : '?')
     + ' - '
     + (this.date_of_death ? moment(this.date_of_death).format('MMMM Do, YYYY') : '');
+});
+
+// Virtual for author's date of birth, formatted for html date input
+AuthorSchema.virtual('date_of_birth_html').get(function() {
+    return this.date_of_birth ? moment(this.date_of_birth).format('YYYY-MM-DD') : '';
+});
+
+// Virtual for author's date of death, formatted for html date input
+AuthorSchema.virtual('date_of_death_html').get(function() {
+    return this.date_of_death ? moment(this.date_of_death).format('YYYY-MM-DD') : '';
 });
 
 // Virtual for author's url
