@@ -17,17 +17,10 @@ app.use(helmet()); // HTTP headers vs. certain vulnerabilities
 
 app.use(logger('dev')); // TODO: resolve w/ use of debug logger
 
-var debug = require('debug')('app');
-// Get dev db URI from local secrets
-try {
-  var secrets = require('./secrets');
-} catch(error) {
-  debug('error getting DB URI: ' + error);
-}
-
 // Set up mongoose connection
 var mongoose = require('mongoose');
-var mongoDB = process.env.MONGODB_URI || secrets.db_conn;
+var mongoDB = process.env.MONGODB_URI || (require('./secrets').db_conn);
+console.log('mongoDB resolved to ' + mongoDB);
 mongoose.connect(mongoDB, { useNewUrlParser: true });
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
